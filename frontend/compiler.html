@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>Editor</title>                         
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
+	
+	<style type="text/css" media="screen">
+	.ace_editor {
+		border: 1px solid lightgray;
+		margin: auto;
+		height: 200px;
+		width: 100%;
+	}
+	.scrollmargin {
+		height: 80px;
+        text-align: center;
+	}
+    </style>	
+</head>
+
+<body>
+   <nav class="navbar navbar-default">  
+		<div class="navbar-header">
+		  <a class="navbar-brand" href="#">DynamicManager Demo</a>
+		</div> 
+	 
+       <ul class="nav nav-tabs">	 
+		 <li><a data-toggle="tab" href="#menu2">Config</a></li> 
+		  <li class="active"><a data-toggle="tab" href="#home">Script Editor</a></li>
+		 
+		  <li><a data-toggle="tab" href="#menu1">Cache Manager</a></li>
+	   </ul>
+
+		<div class="tab-content">
+			<div id="home" class="tab-pane fade in active "">	  				
+					<div class="form-group">	  
+					 	<label class="group-btn">							
+							<span class="btn btn-sm btn-primary">Script Engine 
+								<select id="comboEngines" class="form-control-sm" style="color:black;" ></select>
+							</span>
+							<span class="btn btn-sm btn-primary">Theme
+								<select id="comboTemas" class="form-control-sm "  style="color:black;" ></select>
+							</span>
+						</label>
+						<label class="group-btn">		
+							<span class="btn btn-primary">
+								Open <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+							    <input type="file" id ="fileInput" style="display: none;">
+							</span>
+							<button class="btn btn-success" id="btnSave" align="right">
+								Save <span class="glyphicon glyphicon-file" aria-hidden="true"></span>							
+							</button>
+							<button type="button" id="btnCompile" class="btn btn-primary">Compile</button>
+							<button class="btn btn-success" id="btnRun"align="right">
+								Run <span class="glyphicon glyphicon-play" aria-hidden="true"></span>							
+							</button>						
+							<button type="button" class="btn btn-success" data-toggle="modal" data-target="#paramModal" data-whatever="@mdo">
+								Params <span class="glyphicon glyphicon-cog"></span>
+							</button>
+
+							<button class="btn btn-success" id="btnUpload" align="right">
+								Upload <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>							
+							</button>							
+						​	<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#editorDIV">
+								Hide <span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></span>							
+						    </button>
+														
+						</label>
+		
+					<div id="editorDIV" class="collapse in" >
+						<input id="editor" type="text" name="editor"  style="width: 30%;"> 
+					</div>			
+				</div>
+			</div>
+		
+			<div id="menu1" class="tab-pane fade">
+			 		<label class="group-btn">							
+						<span class="btn btn-sm btn-primary">Script Engine 
+							<select id="comboEngines2" class="form-control-sm" style="color:black;" ></select>
+						</span>
+					</label>
+					<label class="group-btn">							
+						<span class="btn btn-sm btn-primary">Cached Scripts
+							<select id="comboScripts" class="form-control-sm" style="color:black;" ></select>
+						</span>
+					</label>
+					<button type="button" id="btnRunCacheScript" class="btn btn-success" value="Run">
+						Run <span class="glyphicon glyphicon-play" aria-hidden="true"></span>							
+					</button>
+					<button class="btn  btn-success" id="btnParams" title="Run Options">
+						Params <span class="glyphicon glyphicon-cog"></span>
+					</button>
+					<button type="button" id="btnDelCacheScript" value="Del" class="btn btn-danger">
+						Remove <span class="glyphicon glyphicon-remove"></span>
+					</button>
+			</div>
+
+			<div id="menu2" class="tab-pane fade">
+				<label class="group-btn">							
+					<span class="btn btn-sm btn-primary">Server URL
+							<input id="serverURl" type="text" value="http://localhost:8080" size=100 style="color:black;"> 
+					</span>
+				</label>
+			</div>	
+
+			<div id="console-1" > 
+			  <label class="input-group-btn">
+				<button type="button" id="btnClearConsole" class="btn btn-xs btn-primary" aria-label="Left Align">
+					<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>							
+				</button>
+			​	<button type="button" class="btn btn-xs btn-primary" data-toggle="collapse" data-target="#consoleDIV">
+					<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></span>							
+			    </button>
+			  </label>
+			  <div id="consoleDIV" class="collapse in  ">	
+				<input id="console1" type="text" name="console"  style="width: 30%;"> 	         
+			  </div>
+			</div>			
+	  </div>
+
+		<div class="modal fade" id="paramModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="exampleModalLabel">New Param</h4>
+			  </div>
+			  <div class="modal-body">
+				<form>
+				  <div class="form-group">
+				    <label for="recipient-name" class="control-label">Name:</label>
+				    <input type="text" class="form-control" id="paramName">
+				  </div>
+				  <div class="form-group">
+				    <label for="message-text" class="control-label">Value:</label>
+				    <textarea class="form-control" id="paramValue"></textarea>
+				  </div>
+				</form>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button id="btnAddParam" type="button" data-dismiss="modal"class="btn btn-primary">Ok</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+</nav>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+<script src="app.js"></script>
