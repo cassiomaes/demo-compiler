@@ -85,6 +85,11 @@
 			<groupId>org.demoiselle.jee</groupId>
 			<artifactId>demoiselle-script</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-jaxrs</artifactId>
+		</dependency>
 			
 	</dependencies>     
 

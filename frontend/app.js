@@ -1,5 +1,5 @@
 
-   $('#editorDIV').resizable({
+    $('#editorDIV').resizable({
 	  alsoResize: ".consoleDIV"
 	});
 
@@ -7,12 +7,17 @@
 	  alsoResize: ".editorDIV"
 	});
 
-   var editor = ace.edit("editor");
+    var editor = ace.edit("editor");
 		editor.setOptions({
 		autoScrollEditorIntoView: true,
 		maxLines: 25,
 		minLines: 25
     });
+
+	var config = new Object()
+	config.serverUrl ="http://localhost:8080";
+	config.apiUrl    ="/compiler/api/v1/compiler/";
+ 	config.serverUP  = false;
 
     editor.setTheme("ace/theme/eclipse");
     editor.session.setMode("ace/mode/javascript");
@@ -89,7 +94,7 @@
 	}
 
 	function atualizaListaScriptsCache(engine){
-		$.getJSON("http://localhost:8080/compiler/api/v1/compiler/scriptList/" + engine ,function(data){
+		$.getJSON(config.serverUrl + config.apiUrl + "scriptList/" + engine ,function(data){
 			var _htmlOptions="";
 			$.each(data,function(i,data){
 			   _htmlOptions += "<option val='"+data+"'>"+data+"</option>";
@@ -98,6 +103,27 @@
 			$('#comboScripts')[0].options.length = 0;
 			$("#comboScripts").append(_htmlOptions);
 		});
+	}
+	
+    function atualizaComboEngines(){
+		$.getJSON(config.serverUrl + config.apiUrl + "engineList" ,function(data){
+			var _htmlOptions = "";
+			$.each(data,function(i,data){
+			   _htmlOptions += "<option val='"+data+"'>"+data+"</option>";
+			});
+			$("#comboEngines").append(_htmlOptions)
+			$("#comboEngines2").append(_htmlOptions)
+			config.serverUP = true;
+            writeToConsole("Server is up!");
+		}).error(function() { 
+				$("#comboEngines").empty();
+				$("#comboEngines").val(''); 
+
+				$("#comboEngines2").empty();
+				$("#comboEngines2").val(''); 
+				writeToConsole("Server is down!");
+		})
+
 	}
 
 	$.extend({
@@ -114,37 +140,36 @@
 			},
 			error: function(xhr, status, error) {
 				  if(status === 'timeout'){
-					writeToConsole( "<ERROR> Failed from timeout! (service " + url + ") Server is up? Try again later.");
+					writeToConsole( "<ERROR> Request TIMEOUT in call service (" + url + ") Server is busy. Try again later.");
+					config.serverUP = true;
+					return;
+				  }
+				  if(xhr.responseJSON == undefined){					
+					writeToConsole( "<ERROR> Failed to call service (" + url + ") Server is up? Url and port is correct?");
+					config.serverUP = false;
+
+					return;
 				  }
 				  var pattern1 = /:\d+:/;
 				  var pattern2 = /:\s\d+:/;
 
-				  var index = xhr.responseJSON.error_description.match(pattern1);
+				  var index = xhr.responseJSON[0].error_description[0].match(pattern1);
 				  if(index == null){
-				      index = xhr.responseJSON.error_description.match(pattern2);
+				      index = xhr.responseJSON[0].error_description[0].match(pattern2);
 				  }
 				  if(index !=null ){
 					  index = index.toString().replace(/:/g, '').trim();
 
-					  writeToConsole( "<ERROR> " + xhr.responseJSON.error_description);
+					  writeToConsole( "<ERROR> " + xhr.responseJSON[0].error_description[0]);
 					  editor.gotoLine(parseInt(index));
 					  editor.setHighlightActiveLine(true);
 				  }
 				  else {
-					  writeToConsole( "<ERROR> " + xhr.responseJSON.error_description);
+					  writeToConsole( "<ERROR> " + xhr.responseJSON[0].error_description[0]);
 				  }
 			}
 		});
 	  }
-	});
-
-	$.getJSON("http://localhost:8080/compiler/api/v1/compiler/engineList" ,function(data){
-		var _htmlOptions = "";
-		$.each(data,function(i,data){
-		   _htmlOptions += "<option val='"+data+"'>"+data+"</option>";
-		});
-		$("#comboEngines").append(_htmlOptions)
-		$("#comboEngines2").append(_htmlOptions)
 	});
 
    	document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -191,14 +216,17 @@
 		e.preventDefault();
 		engine =  $( "#comboEngines option:selected" ).text();
 		code = editor.getValue();
-		
-		if(code == "" || code == null || code == undefined) 
-			return;
+				
 		if(engine == null || engine =="" || engine == undefined){
 			bootbox.alert("Select a script engine first!");
 			return;
 		}
-		url = "http://localhost:8080/compiler/api/v1/compiler/compile";
+		if(code == "" || code == null || code == undefined) {
+			bootbox.alert("Nothing to compile!");
+			return;
+		}
+
+		url = config.serverUrl +config.apiUrl + "compile";
 
 		writeToConsole( "Starting compile request... (Engine:" +  engine + ")");
 		var posting = $.jpost( url, { code: code , engine: engine } );
@@ -209,19 +237,19 @@
 		engine =  $( "#comboEngines option:selected" ).text();
 		code = editor.getValue();
 		
-		if(code == "" || code == null || code == undefined) 
-			return;
 		if(engine == null || engine =="" || engine == undefined){
 			bootbox.alert("Select a script engine first!");
 			return;
 		}
-		url = "http://localhost:8080/compiler/api/v1/compiler/run";
+		if(code == "" || code == null || code == undefined) {
+			bootbox.alert("Nothing to Run!");
+			return;
+		}
+		url =config.serverUrl + config.apiUrl + "run";
 
-		writeToConsole( "Running the script... (Engine:" +  engine + ")");
+		writeToConsole( "Running the script... (Engine:" +  engine + ") Params: [" + JSON.stringify(params) + " ]");
 
-		alert ( params.toString() );
-		var posting = $.jpost( url, { code: code , engine: engine , params: [ params ] } );
-		//var posting = $.jpost( url, { code: code , engine: engine , params: [{ name: "A" , value: "1"}] } );
+		var posting = $.jpost( url, { code: code , engine: engine , params: params } );
 
 	});
 
@@ -235,7 +263,7 @@
 			return;
 		}
 		
-		url = "http://localhost:8080/compiler/api/v1/compiler/run";
+		url =config.serverUrl + config.apiUrl + "run";
 
 		writeToConsole( "Running Cached Script " + scriptName + " ... (Engine:" +  engine + ")");
 		var posting = $.jpost( url, { engine: engine , scriptName: scriptName } );
@@ -252,7 +280,7 @@
 			return;
 		}
 		
-		url = "http://localhost:8080/compiler/api/v1/compiler/removeScript";
+		url = config.serverUrl + config.apiUrl + "removeScript";
 
 		writeToConsole( "Running the script... (Engine:" +  engine + ")");
 		var posting = $.jpost( url, { engine: engine , scriptName: scriptName } );
@@ -274,7 +302,7 @@
 		bootbox.prompt("Upload to Cache... (Engine:" +  engine + ")",  function(scriptName){
 			if(scriptName != null){
 				
-				url = "http://localhost:8080/compiler/api/v1/compiler/load";
+				url = config.serverUrl + config.apiUrl + "load";
 
 				writeToConsole( "Uploading the script to Dynamic Cache (Engine:" +  engine + ")");
 				var posting = $.jpost( url, { code: code , scriptName: scriptName, engine: engine } );
@@ -298,17 +326,41 @@
 
 	document.getElementById('btnParams').addEventListener('click', function(e) {
 	    e.preventDefault();
+	});
 
+	document.getElementById('btnUpdateServer').addEventListener('click', function(e) {
+	    e.preventDefault();
+		config.serverUrl = document.getElementById('serverUrl').value;
+		atualizaComboEngines();
+		writeToConsole( "Server changed to " + config.serverUrl);
 	});
 
 	document.getElementById('btnAddParam').addEventListener('click', function(e) {
 	    e.preventDefault();
-		var name = document.getElementById('paramName').value;
-		var value = document.getElementById('paramValue').value;
-		params.push( "{ \"" + name + "\":" + "\"" + value + "\"}" );
+		var obj = new Object();
+		obj.name = document.getElementById('paramName').value;
+  	  	obj.value = document.getElementById('paramValue').value; 
+		
+		var find = false;
+	
+		params.forEach(function(item) {
+		  if(item.name == obj.name){
+		     item.value = obj.value;
+ 			 find=true;					  
+		  }             
+		});
+			
+		if(find){
+	     	 writeToConsole( "Alter parameter:" + JSON.stringify(obj) );
+		}
+		else{
+			params.push(obj);
+			writeToConsole( "Add parameter:" + JSON.stringify(obj) );
+		}
 
-		writeToConsole("{ \"" + name + "\":" + "\"" + value + "\"}");
-		writeToConsole("Params: [" + params.toString() + " ]" );
-
+		writeToConsole("Params: [" + JSON.stringify(params) + " ]" );		
 	});
 
+
+	 atualizaComboEngines();
+	
