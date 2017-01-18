@@ -21,9 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.demoiselle.jee.core.api.crud.Result;
-import org.demoiselle.jee.persistence.crud.AbstractBusiness;
-import org.demoiselle.jee.persistence.crud.AbstractREST;
-import org.demoiselle.jee.rest.annotation.ValidatePayload;
+
+
 import org.demoiselle.jee.security.annotation.RequiredRole;
 import org.demoiselle.jee7.example.compiler.business.CompilerBC;
 
@@ -58,10 +57,7 @@ public class CompilerREST {
 	@Path("run")
 	public Response run(Code source) throws ScriptException {
 		Object re =null;
-		
-		
-		List<Params> teste = source.getParams();
-		
+			
 		if(source.getScriptName()!=null)
 			re = bc.runCache(source.getEngine(),source.getScriptName(),source.getParams());
 		else
