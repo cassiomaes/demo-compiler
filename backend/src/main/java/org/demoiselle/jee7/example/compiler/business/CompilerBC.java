@@ -36,7 +36,26 @@ public class CompilerBC {
 			if(list.size() > 0 ){
 				parametros = new SimpleBindings();
 				for (Params p : list ){
-				    parametros.put(p.getName(),p.getValue());
+					
+					if(p.getType().equals("Integer")){
+						parametros.put(p.getName(),   Integer.valueOf(p.getValue()));
+					}
+					if(p.getType().equals("Float")){
+						parametros.put(p.getName(),   Float.valueOf(p.getValue()));
+					}
+					if(p.getType().equals("Double")){
+						parametros.put(p.getName(),   Double.valueOf(p.getValue()));
+					}
+					if(p.getType().equals("String")){
+						parametros.put(p.getName(),p.getValue());
+					}					
+					if(p.getType().equals("Script")){											
+						parametros.put(p.getName(), dm.evalSource(engine, p.getValue(), null));
+					}					
+					if(p.getType().equals("CachedScript")){											
+						parametros.put(p.getName(), dm.eval(engine, p.getValue(), null));
+					}
+					
 				}
 			}
 		return dm.evalSource(engine,  source , parametros);

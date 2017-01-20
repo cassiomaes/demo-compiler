@@ -1,17 +1,14 @@
-
-    $('#editorDIV').resizable({
-	  alsoResize: ".consoleDIV"
+    $('#editor').resizable({
+	  alsoResize: ".console-1"
 	});
 
-	$('#consoleDIV').resizable({
-	  alsoResize: ".editorDIV"
-	});
 
-    var editor = ace.edit("editor");
+
+	var editor = ace.edit("editor");
 		editor.setOptions({
 		autoScrollEditorIntoView: true,
-		maxLines: 25,
-		minLines: 25
+		maxLines: Infinity,
+		minLines: 30
     });
 
 	var config = new Object()
@@ -26,7 +23,7 @@
 
 	var console1 = ace.edit("console1");
 		console1.setOptions({
-		autoScrollEditorIntoView: true,
+		autoScrollEditorIntoView: false,
 		maxLines: 15,
 		minLines: 15,
 		readOnly: true
@@ -42,7 +39,7 @@
 
 	var params = [];
 
-	var data = [
+	var temasData = [
 	"ambiance",
 	"chaos",
 	"cobalt",
@@ -59,11 +56,26 @@
 	"iplastic" ];
 
 	var _htmlOptions = "";
-	$.each(data,function(i,data){
-	   _htmlOptions += "<option val='"+data+"'>"+data+"</option>";
+	$.each(temasData,function(i,temasData){
+	   _htmlOptions += "<option val='"+temasData+"'>"+temasData+"</option>";
 	});
 
 	$("#comboTemas").append(_htmlOptions);
+
+	var typesData = [
+	"Integer",
+	"String",
+	"Script",
+	"CachedScript",
+	];
+
+
+	_htmlOptions = "";
+	$.each(typesData,function(i,typesData){
+	   _htmlOptions += "<option val='"+typesData+"'>"+typesData+"</option>";
+	});
+
+	$("#comboTypes").append(_htmlOptions);
 
 	function writeToConsole(msg){
 		var d = new Date();
@@ -114,14 +126,14 @@
 			$("#comboEngines").append(_htmlOptions)
 			$("#comboEngines2").append(_htmlOptions)
 			config.serverUP = true;
-            writeToConsole("Server is up!");
+            writeToConsole("Server is up! Ready for action =D");
 		}).error(function() { 
 				$("#comboEngines").empty();
 				$("#comboEngines").val(''); 
 
 				$("#comboEngines2").empty();
 				$("#comboEngines2").val(''); 
-				writeToConsole("Server is down!");
+				writeToConsole("Server is down! Nothing to do :(  Maybe try again Later...");
 		})
 
 	}
@@ -328,6 +340,11 @@
 	    e.preventDefault();
 	});
 
+	document.getElementById('comboTypes').addEventListener('change', function(e) {
+	    e.preventDefault();
+		document.getElementById('paramValue').value="";
+	});
+
 	document.getElementById('btnUpdateServer').addEventListener('click', function(e) {
 	    e.preventDefault();
 		config.serverUrl = document.getElementById('serverUrl').value;
@@ -338,14 +355,16 @@
 	document.getElementById('btnAddParam').addEventListener('click', function(e) {
 	    e.preventDefault();
 		var obj = new Object();
-		obj.name = document.getElementById('paramName').value;
-  	  	obj.value = document.getElementById('paramValue').value; 
+		obj.name  = document.getElementById('paramName').value;
+  	  	obj.value = document.getElementById('paramValue').value; 		
+        obj.type  = $( "#comboTypes option:selected" ).text();
 		
 		var find = false;
 	
 		params.forEach(function(item) {
 		  if(item.name == obj.name){
 		     item.value = obj.value;
+			 item.type  = obj.type;
  			 find=true;					  
 		  }             
 		});
@@ -360,7 +379,10 @@
 
 		writeToConsole("Params: [" + JSON.stringify(params) + " ]" );		
 	});
-
+   
+	$(".ui-wrapper").css("overflow", "auto");
+    $(".ui-wrapper").css("height", "auto");
+    $(".ui-wrapper").css("width", "auto");
 
 	 atualizaComboEngines();
 	

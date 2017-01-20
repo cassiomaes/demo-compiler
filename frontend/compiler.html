@@ -9,13 +9,24 @@
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 	
 	<style type="text/css" media="screen">
+
+	  #editorDIV {
+		width: auto;
+		height: auto;			
+	  }
+	  #console-1 {
+		width: auto;
+		height: auto;
+	  }
+
 	.ace_editor {
 		border: 1px solid lightgray;
 		margin: auto;
-		height: 200px;
-		width: 100%;
+		height: auto;
+		width: auto;
 	}
 	.scrollmargin {
 		height: 80px;
@@ -32,9 +43,8 @@
 	 
        <ul class="nav nav-tabs">	 
 		 <li><a data-toggle="tab" href="#menu2">Config</a></li> 
-		  <li class="active"><a data-toggle="tab" href="#home">Script Editor</a></li>
-		 
-		  <li><a data-toggle="tab" href="#menu1">Cache Manager</a></li>
+		 <li class="active"><a data-toggle="tab" href="#home">Script Editor</a></li> 
+		 <li><a data-toggle="tab" href="#menu1">Cache Manager</a></li>
 	   </ul>
 
 		<div class="tab-content">
@@ -69,8 +79,7 @@
 							</button>							
 						​	<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#editorDIV">
 								Hide <span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></span>							
-						    </button>
-														
+						    </button>													
 						</label>
 		
 					<div id="editorDIV" class="collapse in" >
@@ -140,6 +149,12 @@
 				    <label for="recipient-name" class="control-label">Name:</label>
 				    <input type="text" class="form-control" id="paramName">
 				  </div>
+	   			  <div class="form-group">
+				    <label for="recipient-name" class="control-label">Type:</label>
+						<select id="comboTypes" class="form-control-sm "  style="color:black;" >							
+						</select>				    
+				  </div>	
+
 				  <div class="form-group">
 				    <label for="message-text" class="control-label">Value:</label>
 				    <textarea class="form-control" id="paramValue"></textarea>
@@ -153,8 +168,6 @@
 			</div>
 		  </div>
 		</div>
-
-
 </nav>
 
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -163,3 +176,5 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
 <script src="app.js"></script>
+</body>
+</html>
